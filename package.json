@@ -1,0 +1,25 @@
+{
+  "name": "@siparta/blockchain-services",
+  "version": "1.0.0",
+  "description": "SIPARTA Blockchain Layer — Smart Contract deployment, Relayer, & Thirdweb Engine integration for Polygon Amoy",
+  "scripts": {
+    "build": "npx hardhat compile",
+    "deploy:audit": "npx hardhat run scripts/deploy_audit.ts --network amoy",
+    "deploy:certificate": "npx hardhat run scripts/deploy_certificate.ts --network amoy",
+    "relay": "tsx src/relay.ts",
+    "test": "npx hardhat test"
+  },
+  "dependencies": {
+    "thirdweb": "^5.121.1",
+    "ethers": "^6.13.0",
+    "dotenv": "^16.4.0"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "hardhat": "^2.22.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.0",
+    "@types/node": "^22.0.0"
+  },
+  "license": "ISC"
+}
