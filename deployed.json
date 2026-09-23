@@ -1,0 +1,9 @@
+{
+  "contract": "GasDetectionStorage",
+  "address": "0x6FbF430C79b5F9C5c8de3Fb9d0D099C98a47C2D1",
+  "transaction_hash": "87735f34cc7eb8af2ed931bcdf9bb558ecffb334c0e20c77d7ff417602151ee3",
+  "block_number": 45842576,
+  "chain_id": 80002,
+  "owner": "0xADd8605c55B81Da5344efAD8B5719e9A25FC76d0",
+  "deployed_at_unix": 1787661018
+}

@@ -10,7 +10,7 @@
  *   - Ekosistem Web3 di JS/TS (ethers, viem, thirdweb) jauh lebih mature
  *     dan mendapat update lebih cepat dari Polygon/EVM tooling.
  *   - Memisahkan concern: Python fokus AI/ML, TS fokus blockchain.
- *   - Bisa di-deploy independen sebagai microservice di Railway.
+ *   - Bisa di-deploy independen sebagai microservice di Render.
  *
  * Strategi Kontrak (Dual Mode):
  *   - PRIMARY : SipartaAudit.sol  — hanya menyimpan bytes32 hash + IPFS CID (hemat gas, sesuai blueprint).

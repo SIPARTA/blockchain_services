@@ -20,8 +20,8 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from blockchain.config import BlockchainConfig  # noqa: E402
-from blockchain.polygon_client import (  # noqa: E402
+from blockchain_services.config import BlockchainConfig  # noqa: E402
+from blockchain_services.polygon_client import (  # noqa: E402
     InsufficientFundsError,
     InvalidPrivateKeyError,
     InvalidContractError,
