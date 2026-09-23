@@ -20,6 +20,9 @@ import logging
 import threading
 from typing import Any, Optional
 from urllib.parse import urlparse
+import datetime
+import requests
+from pathlib import Path
 
 from eth_account import Account
 from eth_account.signers.local import LocalAccount
@@ -261,7 +264,7 @@ class PolygonAmoyClient:
                 f"{cfg.chain_id} — deploy GasDetectionStorage first"
             )
 
-        abi = load_abi()
+        abi = load_abi(Path(__file__).resolve().parent / "siparta_audit_abi.json")
         self._contract = w3.eth.contract(address=contract_address, abi=abi)
 
         balance = self._safe_balance(w3, account.address)
@@ -298,6 +301,89 @@ class PolygonAmoyClient:
             raise BlockchainError("client is not connected — call connect()")
 
     # -- write path ------------------------------------------------------
+
+    def anchor_incident(
+        self,
+        incident_id: str,
+        payload: dict[str, Any],
+        timeout_s: Optional[int] = None,
+    ) -> dict[str, Any]:
+        """Upload payload to Pinata IPFS and store cid & incident_id on-chain."""
+        if self._w3 is None:
+            self.connect()
+        self._require_connected()
+        assert self._w3 is not None and self._account is not None
+
+        # 1. Upload to Pinata IPFS
+        ipfs_cid = payload.get("ipfs_cid")
+        if not ipfs_cid:
+            if not self._cfg.pinata_jwt:
+                raise BlockchainError("PINATA_JWT is not configured")
+            
+            logger.info("%s Uploading metadata to Pinata IPFS...", TAG)
+            headers = {
+                "Authorization": f"Bearer {self._cfg.pinata_jwt}",
+                "Content-Type": "application/json"
+            }
+            url = "https://api.pinata.cloud/pinning/pinJSONToIPFS"
+            
+            metadata = {
+                "incident_id": incident_id,
+                "classification": payload.get("classification", "unknown"),
+                "sensor_data": {
+                    "mics5524": payload.get("mics5524", 0),
+                    "tgs2600": payload.get("tgs2600", 0),
+                    "mq2": payload.get("mq2", 0),
+                    "mq135": payload.get("mq135", 0),
+                },
+                "image_url": payload.get("image_url", ""),
+                "timestamp": datetime.datetime.utcnow().isoformat()
+            }
+            
+            pinata_payload = {
+                "pinataContent": metadata,
+                "pinataMetadata": {
+                    "name": f"incident-{incident_id}.json"
+                }
+            }
+            
+            try:
+                resp = requests.post(url, json=pinata_payload, headers=headers, timeout=15)
+                resp.raise_for_status()
+                ipfs_cid = resp.json().get("IpfsHash")
+            except Exception as e:
+                raise BlockchainError(f"Pinata IPFS upload failed: {e}")
+
+        # 2. Anchor to Polygon (SipartaAudit)
+        try:
+            incident_id_bytes = Web3.keccak(text=incident_id)
+        except Exception as e:
+            raise BlockchainError(f"Failed to hash incident_id: {e}")
+
+        fn = self._w3.eth.contract(
+            address=self._contract.address, abi=self._contract.abi,
+        ).functions.logIncident(incident_id_bytes, ipfs_cid)
+
+        logger.info("%s Anchoring incident to SipartaAudit...", TAG)
+        tx_hash = self._sign_and_send(fn)
+        logger.info("%s Transaction submitted: %s", TAG, tx_hash)
+
+        receipt = self._wait_for_receipt(tx_hash, timeout_s)
+        status = int(receipt.get("status", 0))
+        if status != 1:
+            raise TransactionFailedError(f"transaction reverted on-chain: {tx_hash}")
+
+        block_number = int(receipt["blockNumber"])
+        logger.info("%s Transaction confirmed: %s", TAG, tx_hash)
+        logger.info("%s Block: %d | Gas used: %d",
+                    TAG, block_number, int(receipt.get("gasUsed", 0)))
+        
+        return {
+            "transaction_hash": tx_hash,
+            "block_number": block_number,
+            "gas_used": int(receipt.get("gasUsed", 0)),
+            "ipfs_cid": ipfs_cid
+        }
 
     def send_sensor_data(
         self,

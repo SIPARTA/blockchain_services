@@ -77,6 +77,7 @@ class BlockchainConfig:
         evidence_base_url: str,
         request_timeout_s: int,
         receipt_timeout_s: int,
+        pinata_jwt: str,
     ) -> None:
         self.rpc_url = rpc_url.strip()
         self.private_key = private_key.strip()
@@ -86,6 +87,7 @@ class BlockchainConfig:
         self.evidence_base_url = evidence_base_url.strip().rstrip("/")
         self.request_timeout_s = request_timeout_s
         self.receipt_timeout_s = receipt_timeout_s
+        self.pinata_jwt = pinata_jwt.strip()
 
     @classmethod
     def load(cls) -> "BlockchainConfig":
@@ -108,15 +110,17 @@ class BlockchainConfig:
         enabled_raw = _env("BLOCKCHAIN_ENABLED", "false").strip().lower()
         enabled = enabled_raw in ("1", "true", "yes", "on")
 
+        # Either PINATA_JWT or fallback to trying to use something else, but we just load PINATA_JWT
         return cls(
             rpc_url=_env("POLYGON_AMOY_RPC_URL"),
-            private_key=_env("POLYGON_AMOY_PRIVATE_KEY"),
-            contract_address=_env("POLYGON_AMOY_CONTRACT_ADDRESS"),
+            private_key=_env("POLYGON_AMOY_PRIVATE_KEY") or _env("RELAYER_PRIVATE_KEY"),
+            contract_address=_env("SIPARTA_AUDIT_CONTRACT") or _env("POLYGON_AMOY_CONTRACT_ADDRESS"),
             chain_id=chain_id,
             enabled=enabled,
             evidence_base_url=_env("EVIDENCE_BASE_URL"),
             request_timeout_s=DEFAULT_REQUEST_TIMEOUT_S,
             receipt_timeout_s=DEFAULT_RECEIPT_TIMEOUT_S,
+            pinata_jwt=_env("PINATA_JWT"),
         )
 
     @property
@@ -141,4 +145,5 @@ class BlockchainConfig:
             "contract_address": self.contract_address or "<unset>",
             "chain_id": self.chain_id,
             "evidence_base_url": self.evidence_base_url or "<unset>",
+            "pinata_jwt": _mask(self.pinata_jwt),
         }
