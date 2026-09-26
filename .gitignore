@@ -1,7 +1,29 @@
+# Node dependencies
 node_modules/
-dist/
+
+# Hardhat / Web3
 cache/
 artifacts/
+typechain/
 typechain-types/
+coverage/
+coverage.json
+gasReporterOutput.json
+
+# Environment
 .env
+.env.*
+!.env.example
+
+# Build
+dist/
+build/
+
+# Python
 __pycache__/
+*.pyc
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
