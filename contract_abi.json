@@ -1,0 +1,68 @@
+[
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "internalType": "uint256", "name": "id", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "timestamp", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "mics5524", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "tgs2600", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "mq2", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "mq135", "type": "uint256" },
+      { "indexed": false, "internalType": "string", "name": "classification", "type": "string" },
+      { "indexed": false, "internalType": "string", "name": "imageUrl", "type": "string" }
+    ],
+    "name": "DataStored",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "timestamp", "type": "uint256" },
+      { "internalType": "uint256", "name": "mics5524", "type": "uint256" },
+      { "internalType": "uint256", "name": "tgs2600", "type": "uint256" },
+      { "internalType": "uint256", "name": "mq2", "type": "uint256" },
+      { "internalType": "uint256", "name": "mq135", "type": "uint256" },
+      { "internalType": "string", "name": "classification", "type": "string" },
+      { "internalType": "string", "name": "imageUrl", "type": "string" }
+    ],
+    "name": "addData",
+    "outputs": [{ "internalType": "uint256", "name": "id", "type": "uint256" }],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "id", "type": "uint256" }],
+    "name": "getData",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "uint256", "name": "timestamp", "type": "uint256" },
+          { "internalType": "uint256", "name": "mics5524", "type": "uint256" },
+          { "internalType": "uint256", "name": "tgs2600", "type": "uint256" },
+          { "internalType": "uint256", "name": "mq2", "type": "uint256" },
+          { "internalType": "uint256", "name": "mq135", "type": "uint256" },
+          { "internalType": "string", "name": "classification", "type": "string" },
+          { "internalType": "string", "name": "imageUrl", "type": "string" }
+        ],
+        "internalType": "struct GasDetectionStorage.SensorData",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getTotalData",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
